@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+    backend:
+        build:
+            context: ./backend
+            # TBD: this is for development only!
+            args:
+                - DEV=true
+        ports:
+             - "8000:8000"
+        volumes:
+            - ./backend:/app
