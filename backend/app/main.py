@@ -1,9 +1,8 @@
+from app.routers.post import router as post_router
 from fastapi import FastAPI
 
 app = FastAPI()
 
-
-@app.get("/")
-def read_root():
-    """This is the root path of the API"""
-    return {"message": "Hello World"}
+# Interesting with the prefix here: investigate that!
+# app.include_router(post_router, prefix="/api/v1")
+app.include_router(post_router)
