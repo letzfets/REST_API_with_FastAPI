@@ -23,3 +23,9 @@ What is REST?
     - client does not see any backend slpits
 
 
+# Working with FastAPI
+
+Thought process:
+1. What data does your API receive and return? (models)
+2. What data do you need to store? (database)
+3. Write the interface? (endpoints)
