@@ -29,3 +29,7 @@ Thought process:
 1. What data does your API receive and return? (models)
 2. What data do you need to store? (database)
 3. Write the interface? (endpoints)
+
+# Pytest
+
+Using *Fixtures*: a couple of things to share between tests -> put in conftest.py in test folder.
