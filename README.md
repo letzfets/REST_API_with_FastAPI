@@ -35,3 +35,5 @@ Thought process:
 Using *Fixtures*: a couple of things to share between tests -> put in conftest.py in test folder.
 
 Showing all defined fixtures: `pytest --fixtures`
+
+Boundary Value Analysis: find out how many tests and which ones to implement
