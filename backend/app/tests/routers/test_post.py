@@ -13,11 +13,26 @@ async def create_post(body: str, async_client: AsyncClient) -> dict:
     return response.json()
 
 
+async def create_comment(body: str, post_id: int, async_client: AsyncClient) -> dict:
+    """Creates a post and returns it."""
+    response = await async_client.post(
+        "/comment",
+        json={"body": body, "post_id": post_id},
+    )
+    return response.json()
+
+
 @pytest.fixture()
 # creatED, because by the time the function runs, the post is already created.
 async def created_post(async_client: AsyncClient):
     """Creates a post and returns it."""
     return await create_post("Test Post", async_client)
+
+
+@pytest.fixture()
+async def created_comment(async_client: AsyncClient, created_post: dict):
+    """Creates a comment and returns it."""
+    return await create_comment("Test Comment", created_post["id"], async_client)
 
 
 @pytest.mark.anyio
@@ -54,3 +69,40 @@ async def test_get_all_posts(async_client: AsyncClient, created_post: dict):
     assert len(response.json()) == 1
     assert created_post.items() <= response.json()[0].items()
     assert [created_post] == response.json()
+
+
+@pytest.mark.anyio
+async def test_create_comment(async_client: AsyncClient, created_post: dict):
+    body = "Test Comment"
+
+    response = await async_client.post(
+        "/comment",
+        json={"body": body, "post_id": created_post["id"]},
+    )
+
+    assert response.status_code == 201
+    assert {
+        "id": 0,
+        "body": body,
+        "post_id": created_post["id"],
+    }.items() <= response.json().items()
+
+
+@pytest.mark.anyio
+async def test_get_comments_on_post(
+    async_client: AsyncClient, created_post: dict, created_comment: dict
+):
+    response = await async_client.get(f"/post/{created_post['id']}/comment")
+
+    assert response.status_code == 200
+    assert response.json() == [created_comment]
+
+
+@pytest.mark.anyio
+async def test_get_comments_on_post_empty(
+    async_client: AsyncClient, created_post: dict
+):
+    response = await async_client.get(f"/post/{created_post['id']}/comment")
+
+    assert response.status_code == 200
+    assert response.json() == []
