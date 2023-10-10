@@ -33,3 +33,5 @@ Thought process:
 # Pytest
 
 Using *Fixtures*: a couple of things to share between tests -> put in conftest.py in test folder.
+
+Showing all defined fixtures: `pytest --fixtures`

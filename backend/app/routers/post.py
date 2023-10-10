@@ -28,7 +28,7 @@ def find_post(post_id: int):
 @router.post("/post", response_model=UserPost, status_code=201)
 async def create_post(post: UserPostIn):
     """This is the create_post path of the API"""
-    data = post.dict()
+    data = post.model_dump()
     last_record_id = len(post_table)
     new_post = {**data, "id": last_record_id}
     post_table[last_record_id] = new_post
@@ -37,7 +37,7 @@ async def create_post(post: UserPostIn):
 
 @router.get("/posts", response_model=list[UserPost])
 async def get_posts():
-    """This is the get_posts path of the API"""
+    """This is returns all posts of the API"""
     return list(post_table.values())
 
 
@@ -48,7 +48,7 @@ async def create_post(comment: CommentIn):
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
-    data = comment.dict()
+    data = comment.model_dump()
     last_record_id = len(comment_table)
     new_comment = {**data, "id": last_record_id}
     comment_table[last_record_id] = new_comment
