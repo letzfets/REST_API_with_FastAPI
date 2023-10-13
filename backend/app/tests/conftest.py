@@ -1,6 +1,9 @@
+import os
 from typing import AsyncGenerator, Generator
 
 import pytest
+
+os.environ["ENV_STATE"] = "test"  # noqa: E402
 from app.main import app
 from app.routers.post import comment_table, post_table
 from fastapi.testclient import TestClient
