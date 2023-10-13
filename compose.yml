@@ -4,11 +4,6 @@ services:
     backend:
         build:
             context: ./backend
-            # TBD: this is for development only!
-            args:
-                - DEV=true
-        env-file:
-            - ./bakcend/.env
         ports:
             - "8000:8000"
         volumes:
