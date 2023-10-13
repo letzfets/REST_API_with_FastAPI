@@ -36,4 +36,8 @@ Using *Fixtures*: a couple of things to share between tests -> put in conftest.p
 
 Showing all defined fixtures: `pytest --fixtures`
 
-Boundary Value Analysis: find out how many tests and which ones to implement
+Boundary Value Analysis: find out how many tests and which ones to 
+
+# Async databases
+
+Use asynchronous databases for FastAPI. Start with *encode/databases* module works with SQLAlchemy calls, so it can be exchanged later easily for SQLAlchemy + a real database.
