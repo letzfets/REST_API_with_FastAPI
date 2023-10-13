@@ -40,4 +40,10 @@ Boundary Value Analysis: find out how many tests and which ones to
 
 # Async databases
 
-Use asynchronous databases for FastAPI. Start with *encode/databases* module works with SQLAlchemy calls, so it can be exchanged later easily for SQLAlchemy + a real database.
+Use asynchronous databases for FastAPI. Start with `encode/databases` module works with SQLAlchemy calls, so it can be exchanged later easily for SQLAlchemy + a real database.
+
+Two ways to talk to a database:
+- executing queries (used here through `encode/databases`)
+- using an ORM
+
+Compare to `SQLModel` which is a simple Object Relational Manager (ORM) for FastAPI and `SQLAlchemy` which is a comprehensive ORM for Python.
