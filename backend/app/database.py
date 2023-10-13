@@ -4,7 +4,7 @@ import databases
 import sqlalchemy
 
 # Python runs modules on import
-from config import config
+from app.config import config
 
 metadata = sqlalchemy.MetaData()
 
