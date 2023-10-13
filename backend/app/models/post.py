@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class UserPostIn(BaseModel):
@@ -10,6 +10,7 @@ class UserPostIn(BaseModel):
 class UserPost(UserPostIn):
     """This is the UserPost model"""
 
+    model_config = ConfigDict(from_attributes=True)
     id: int
 
 
@@ -23,6 +24,7 @@ class CommentIn(BaseModel):
 class Comment(CommentIn):
     """This is the Comment model"""
 
+    model_config = ConfigDict(from_attributes=True)
     id: int
 
 

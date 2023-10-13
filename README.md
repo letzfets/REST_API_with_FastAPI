@@ -47,3 +47,14 @@ Two ways to talk to a database:
 - using an ORM
 
 Compare to `SQLModel` which is a simple Object Relational Manager (ORM) for FastAPI and `SQLAlchemy` which is a comprehensive ORM for Python.
+
+Whenever interacting with a database:
+1. decide what to do
+2. write the query
+3. run the query
+
+Ways of writing queries:
+- SQLAlchemy's ORM
+- companion ORM (python objects, as if they were connected to a database)
+- using the database's module own query builder (e.g. `encode/databases`)
+- using the database's own query language (e.g. SQL)
