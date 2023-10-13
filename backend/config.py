@@ -1,3 +1,4 @@
+from functools import lru_cache  # Least Recently Used Cache
 from typing import Optional
 
 from pydantic import BaseSettings
@@ -33,7 +34,7 @@ class DevConfig(GlobalConfig):
 class TestConfig(GlobalConfig):
     """This is the Development class"""
 
-    model_config = SettingsConfigDict(env_prefix="TEST_")
+    DATABASE_URL: str = "sqlite:///./test.db"
     DB_FORCE_ROLL_BACK: bool = True
 
 
@@ -41,3 +42,16 @@ class ProdConfig(GlobalConfig):
     """This is the Development class"""
 
     model_config = SettingsConfigDict(env_prefix="PROD_")
+
+
+# cache this function, so that it never runs more than once
+@lru_cache()
+def get_config(env_state: str):
+    configs = {"dev": DevConfig, "test": TestConfig, "production": ProdConfig}
+    return configs[env_state]()
+
+
+# reads the .env file and ONLY gets the ENV_STATE variable
+# "ENV_STATE" is outside the configuration classes,
+# and therefore not prefixed with "DEV_", "TEST_" or "PROD_"
+config = get_config(BaseConfig().ENV_STATE)
