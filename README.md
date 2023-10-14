@@ -109,3 +109,5 @@ Used for *logger inhertiance*:
 Example: app.routers.post uses first the loggers from `app.routers.post`, than passes the logs to the loggers of `app.routers`, and finally to the loggers of `app`.
 If a logger is not found, it will look for the next logger in the hierarchy.
 So, if loggers are configures on `app` level all imports will use those handlers, unless they are overwritten in the module itself.
+
+`root` logger is above the `app` logger, so it will always be used, unless `propagate` is set to `False`.
