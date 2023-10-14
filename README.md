@@ -58,3 +58,44 @@ Ways of writing queries:
 - companion ORM (python objects, as if they were connected to a database)
 - using the database's module own query builder (e.g. `encode/databases`)
 - using the database's own query language (e.g. SQL)
+
+# Logging
+
+- Loggers
+- Handlers
+- Formatters
+- Filters
+
+## Loggers, Handlers, and Formatters
+
+In the realm of code, logging's a fickle dance,
+Too many logs may leave budgets askance,
+Find the right balance, and debug you can,
+But log too much, you'll end up in a jam!
+[ChatGPT]
+
+Pros & Cons of loggers:
++ understand what happened at crashes
+- can make code less readable
++ gain historical context of application
+- need to pay for the storage of logs
++ Once setup, logging is easy
+- confusing first time setting it up
++ Alerts and dashboards can be setup
+
+Logging module in python:
+logger (schedules log information for output)
+-> handler (sends log information to destination)
+-> formatter (formats log information)
+
+
+Example:
+logger, 2 handlers (console handler, file handler), formatter (display current time + log message)
+
+
+Logging levels:
+- Critical -> errors, that cause application failure, such as crucial database connection
+- Error -> errors, that affect operation, such as an HTTP 500 error, but allow application to continue working
+- Warning -> warnings, that do not affect operation, but may be important, such as a deprecated code usage or low disk space
+- Info -> information about the application, such as a user authentication message or version info
+- Debug -> information about the application, that is useful for debugging and testing
