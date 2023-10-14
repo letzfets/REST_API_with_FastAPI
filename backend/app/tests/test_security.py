@@ -51,12 +51,27 @@ async def test_authenticate_user(registered_user: dict):
 @pytest.mark.anyio
 async def test_authenticate_user_not_found():
     """Test that we cannot authenticate a nonexisting user."""
-    with pytest.raises(Exception):
+    with pytest.raises(security.HTTPException):
         await security.authenticate_user("test@example.net", "1234")
 
 
 @pytest.mark.anyio
 async def test_authenticate_user_wrong_password(registered_user: dict):
     """Test that we cannot authenticate a user with a wrong password."""
-    with pytest.raises(Exception):
+    with pytest.raises(security.HTTPException):
         await security.authenticate_user(registered_user["email"], "wrong password")
+
+
+@pytest.mark.anyio
+async def test_get_current_user(registered_user: dict):
+    """Test that we can get the current user."""
+    token = security.create_access_token(registered_user["email"])
+    user = await security.get_current_user(token)
+    assert user.email == registered_user["email"]
+
+
+@pytest.mark.anyio
+async def test_get_current_user_invalid_token():
+    """Test that we cannot get a user with an invalid token."""
+    with pytest.raises(security.HTTPException):
+        await security.get_current_user("invalid token")
