@@ -4,7 +4,7 @@ from typing import AsyncGenerator, Generator
 import pytest
 
 os.environ["ENV_STATE"] = "test"  # noqa: E402
-from app.database import database  # noqa: E402
+from app.database import database, user_table  # noqa: E402
 from app.main import app
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
@@ -38,3 +38,14 @@ async def async_client(client) -> AsyncGenerator:
     """Returns an AsyncClient instance."""
     async with AsyncClient(app=app, base_url=client.base_url) as ac:
         yield ac
+
+
+@pytest.fixture()
+async def registered_user(async_client: AsyncClient) -> dict:
+    """Creates a user and returns it."""
+    user_details = {"email": "test@example.com", "password": "1234"}
+    await async_client.post("/register", json=user_details)
+    query = user_table.select().where(user_table.c.email == user_details["email"])
+    user = await database.fetch_one(query)
+    user_details["id"] = user.id
+    return user_details
