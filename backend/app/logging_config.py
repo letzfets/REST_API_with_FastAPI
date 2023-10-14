@@ -1,6 +1,29 @@
+import logging
 from logging.config import dictConfig
 
 from app.config import DevConfig, config
+
+
+def obfuscated(email: str, obfuscated_length: int) -> str:
+    """Obfuscates email addresses."""
+    characters = email[:obfuscated_length]
+    first, last = email.split("@")
+    return characters + ("*" * (len(first) - obfuscated_length)) + "@" + last
+
+
+class EmailObfuscatorFilter(logging.Filter):
+    """Obfuscates email addresses in logs."""
+
+    def __init__(self, name: str = "", obfuscated_length: int = 2) -> None:
+        """Initializes the filter."""
+        super().__init__(name)
+        self.obfuscated_length = obfuscated_length
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        """Obfuscates email addresses in logs."""
+        if "email" in record.__dict__:
+            record.email = obfuscated(record.email, self.obfuscated_length)
+        return True
 
 
 def configure_logging() -> None:
@@ -16,7 +39,11 @@ def configure_logging() -> None:
                     # arguments to the function call above:
                     "uuid_length": 8 if isinstance(config, DevConfig) else 32,
                     "default_value": "-",
-                }
+                },
+                "email_obfuscator": {
+                    "()": "app.logging_config.EmailObfuscatorFilter",
+                    "obfuscated_length": 2 if isinstance(config, DevConfig) else 0,
+                },
             },
             "formatters": {
                 "console": {
@@ -35,13 +62,13 @@ def configure_logging() -> None:
                     "class": "rich.logging.RichHandler",
                     "level": "DEBUG",
                     "formatter": "console",
-                    "filters": ["correlation_id"],
+                    "filters": ["correlation_id", "email_obfuscator"],
                 },
                 "rotating_file": {
                     "class": "logging.handlers.RotatingFileHandler",
                     "level": "DEBUG",
                     "formatter": "file",
-                    "filters": ["correlation_id"],
+                    "filters": ["correlation_id", "email_obfuscator"],
                     "filename": "app.log",
                     "maxBytes": 1024 * 1024,
                     "backupCount": 2,

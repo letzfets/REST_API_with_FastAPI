@@ -61,6 +61,7 @@ async def create_comment(comment: CommentIn):
 
     data = comment.model_dump()
     query = comment_table.insert().values(data)
+    # logger.debug(query, extra={"post_id": post.id, "email": "bob@example.com"})
     logger.debug(query)
     last_record_id = await database.execute(query)
     return {**data, "id": last_record_id}
