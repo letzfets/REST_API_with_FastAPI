@@ -121,4 +121,6 @@ Logging flow:
 
 ## Cloud logging
 
-Using [logtail](https://betterstack.com/logs) to send logs to a cloud logging service
+Using [logtail](https://betterstack.com/logs) to send logs to a cloud logging service.
+
+But use logtail only for production, not for development, for avoiding mixing up logs from different environments and cluttering production logs with development logs.
