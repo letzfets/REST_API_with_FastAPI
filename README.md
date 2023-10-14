@@ -111,3 +111,10 @@ If a logger is not found, it will look for the next logger in the hierarchy.
 So, if loggers are configures on `app` level all imports will use those handlers, unless they are overwritten in the module itself.
 
 `root` logger is above the `app` logger, so it will always be used, unless `propagate` is set to `False`.
+
+## Logging filters
+
+Loggers and handlers can each have filters.
+
+Logging flow:
+[Logging Flowchart](backend/doc/logging_flow.png)
