@@ -84,18 +84,28 @@ Pros & Cons of loggers:
 + Alerts and dashboards can be setup
 
 Logging module in python:
+`import logging`
 logger (schedules log information for output)
 -> handler (sends log information to destination)
 -> formatter (formats log information)
 
 
-Example:
+## Example:
 logger, 2 handlers (console handler, file handler), formatter (display current time + log message)
 
 
-Logging levels:
+## Logging levels:
 - Critical -> errors, that cause application failure, such as crucial database connection
 - Error -> errors, that affect operation, such as an HTTP 500 error, but allow application to continue working
 - Warning -> warnings, that do not affect operation, but may be important, such as a deprecated code usage or low disk space
 - Info -> information about the application, such as a user authentication message or version info
 - Debug -> information about the application, that is useful for debugging and testing
+
+
+## Logging hierarchies
+ using `__name__` to create a hierarchy of loggers: either set to string `"__main__"` (if called in main module) or the import path of the module (if called in another module).
+
+Used for *logger inhertiance*:
+Example: app.routers.post uses first the loggers from `app.routers.post`, than passes the logs to the loggers of `app.routers`, and finally to the loggers of `app`.
+If a logger is not found, it will look for the next logger in the hierarchy.
+So, if loggers are configures on `app` level all imports will use those handlers, unless they are overwritten in the module itself.
