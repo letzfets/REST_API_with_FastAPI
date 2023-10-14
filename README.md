@@ -130,3 +130,13 @@ But use logtail only for production, not for development, for avoiding mixing up
 using *Jason Web Tokens* (JWT, also known as *Bearer* or *Access Token*) for authentication.
 
 [JWT](doc/jwt.png)
+
+JWT includes:
+- header
+    - type of token
+    - hashing algorithm
+- payload
+    - data
+    - expiration date
+- signature
+
