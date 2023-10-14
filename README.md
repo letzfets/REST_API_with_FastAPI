@@ -124,3 +124,9 @@ Logging flow:
 Using [logtail](https://betterstack.com/logs) to send logs to a cloud logging service.
 
 But use logtail only for production, not for development, for avoiding mixing up logs from different environments and cluttering production logs with development logs.
+
+# Authentication
+
+using *Jason Web Tokens* (JWT, also known as *Bearer* or *Access Token*) for authentication.
+
+[JWT](doc/jwt.png)
