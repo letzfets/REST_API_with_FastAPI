@@ -1,12 +1,43 @@
+import datetime
 import logging
 
+from app.config import config
 from app.database import database, user_table
+from fastapi import HTTPException, status
+from jose import jwt
 from passlib.context import CryptContext
 
 logger = logging.getLogger(__name__)
 
 
 pwd_context = CryptContext(schemes=["bcrypt"])
+
+
+credentials_exception = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Could not validate credentials",
+)
+
+
+def access_token_expire_minutes() -> str:
+    """Returns the access token expire time in minutes."""
+    return 30
+
+
+def create_access_token(email: dict):
+    """Creates an access token."""
+    logger.debug("Creating access token", extra={"email": email})
+    expire = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+        minutes=access_token_expire_minutes()
+    )
+    jwt_payload = {
+        "sub": email,
+        "exp": expire,
+    }
+    encoded_jwt = jwt.encode(
+        jwt_payload, key=config.SECRET_KEY, algorithm=config.ALGORITHM
+    )
+    return encoded_jwt
 
 
 def get_password_hash(password: str) -> str:
@@ -25,3 +56,15 @@ async def get_user(email: str):
     result = await database.fetch_one(query)
     if result:
         return result
+
+
+async def authenticate_user(email: str, password: str):
+    """Authenticates a user."""
+    logger.debug("Authenticating user with email", extra={"email": email})
+    user = await get_user(email)
+    if not user:
+        raise credentials_exception
+    # note, user.password is the hashed password!
+    if not verify_password(password, user.password):
+        raise credentials_exception
+    return user

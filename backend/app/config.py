@@ -16,6 +16,9 @@ class GlobalConfig(BaseConfig):
 
     DATABASE_URL: Optional[str] = None
     DB_FORCE_ROLL_BACK: bool = False
+    SECRET_KEY: Optional[str] = None
+    ALGORITHM: Optional[str] = None
+    ACCESS_TOKEN_EXPIRE_MINUTES: Optional[int] = 30
 
 
 class DevConfig(GlobalConfig):
@@ -29,6 +32,7 @@ class DevConfig(GlobalConfig):
 class TestConfig(GlobalConfig):
     """This is the Development class"""
 
+    model_config = SettingsConfigDict(env_prefix="TEST_")
     DATABASE_URL: str = "sqlite:///test.db"
     DB_FORCE_ROLL_BACK: bool = True
 

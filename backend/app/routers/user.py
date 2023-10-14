@@ -2,7 +2,12 @@ import logging
 
 from app.database import database, user_table
 from app.models.user import UserIn
-from app.security import get_password_hash, get_user
+from app.security import (
+    authenticate_user,
+    create_access_token,
+    get_password_hash,
+    get_user,
+)
 from fastapi import APIRouter, HTTPException, status
 
 logger = logging.getLogger(__name__)
@@ -22,3 +27,11 @@ async def register(user: UserIn):
     logger.debug(query)
     await database.execute(query)
     return {"detail": "User created"}
+
+
+@router.post("/token")
+async def login(user: UserIn):
+    """This is the login path of the API"""
+    user = await authenticate_user(user.email, user.password)
+    access_token = create_access_token(user.email)
+    return {"access_token": access_token, "token_type": "bearer"}
