@@ -68,7 +68,7 @@ instance/
 .webassets-cache
 
 # SQlite database files:
-**.db
+*.db
 
 # Scrapy stuff:
 .scrapy
