@@ -9,16 +9,25 @@ def configure_logging() -> None:
         {
             "version": 1,
             "disable_existing_loggers": False,
+            "filters": {
+                "correlation_id": {
+                    # function call
+                    "()": "asgi_correlation_id.CorrelationIdFilter",
+                    # arguments to the function call above:
+                    "uuid_length": 8 if isinstance(config, DevConfig) else 32,
+                    "default_value": "-",
+                }
+            },
             "formatters": {
                 "console": {
                     "class": "logging.Formatter",
                     "datefmt": "%Y-%m-%d %H:%M:%S",
-                    "format": "%(name)s: %(lineno)d in %(module)s: %(message)s",
+                    "format": "(%(correlation_id)s) %(name)s: %(lineno)d in %(module)s: %(message)s",
                 },
                 "file": {
                     "class": "logging.Formatter",
                     "datefmt": "%Y-%m-%d %H:%M:%S",
-                    "format": "%(asctime)s.%(msecs)03dZ | %(levelname)-8s | %(name)s:%(lineno)d - %(message)s",
+                    "format": "%(asctime)s.%(msecs)03dZ | %(levelname)-8s | [%(correlation_id)s] %(name)s:%(lineno)d - %(message)s",
                 },
             },
             "handlers": {
@@ -26,11 +35,13 @@ def configure_logging() -> None:
                     "class": "rich.logging.RichHandler",
                     "level": "DEBUG",
                     "formatter": "console",
+                    "filters": ["correlation_id"],
                 },
                 "rotating_file": {
                     "class": "logging.handlers.RotatingFileHandler",
                     "level": "DEBUG",
                     "formatter": "file",
+                    "filters": ["correlation_id"],
                     "filename": "app.log",
                     "maxBytes": 1024 * 1024,
                     "backupCount": 2,
@@ -51,7 +62,7 @@ def configure_logging() -> None:
                     "level": "WARNING",
                 },
                 "app": {
-                    "handlers": ["default"],
+                    "handlers": ["default", "rotating_file"],
                     "level": "DEBUG" if isinstance(config, DevConfig) else "INFO",
                     "propagate": False,  # does not send any logs to its parent logger
                 },

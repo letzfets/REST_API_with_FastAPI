@@ -6,3 +6,4 @@ databases[aiosqlite]>=0.8.0,<0.9
 python-dotenv>=1.0.0,<1.1
 pydantic-settings>=2.0.3,<2.1
 rich<13.17
+asgi-correlation-id>=4.2.0,<4.3
