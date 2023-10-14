@@ -7,6 +7,7 @@ def test_password_hashing():
     password = "1234"
     hashed_password = security.get_password_hash(password)
     assert security.verify_password(password, hashed_password)
+    assert password != hashed_password
 
 
 @pytest.mark.anyio
