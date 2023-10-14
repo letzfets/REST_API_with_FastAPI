@@ -24,11 +24,23 @@ def configure_logging() -> None:
                 }
             },
             "loggers": {
+                "uvicorn": {
+                    "handlers": ["default"],
+                    "level": "INFO",
+                },
+                "databases": {
+                    "handlers": ["default"],
+                    "level": "WARNING",
+                },
+                "aiosqlite": {
+                    "handlers": ["default"],
+                    "level": "WARNING",
+                },
                 "app": {
                     "handlers": ["default"],
                     "level": "DEBUG" if isinstance(config, DevConfig) else "INFO",
                     "propagate": False,  # does not send any logs to its parent logger
-                }
+                },
             },
         }
     )
