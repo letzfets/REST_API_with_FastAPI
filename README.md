@@ -105,7 +105,7 @@ logger, 2 handlers (console handler, file handler), formatter (display current t
 ## Logging hierarchies
  using `__name__` to create a hierarchy of loggers: either set to string `"__main__"` (if called in main module) or the import path of the module (if called in another module).
 
-Used for *logger inhertiance*:
+Used for *logger inheritance*:
 Example: app.routers.post uses first the loggers from `app.routers.post`, than passes the logs to the loggers of `app.routers`, and finally to the loggers of `app`.
 If a logger is not found, it will look for the next logger in the hierarchy.
 So, if loggers are configures on `app` level all imports will use those handlers, unless they are overwritten in the module itself.
@@ -118,3 +118,7 @@ Loggers and handlers can each have filters.
 
 Logging flow:
 [Logging Flowchart](backend/doc/logging_flow.png)
+
+## Cloud logging
+
+Using [logtail](https://betterstack.com/logs) to send logs to a cloud logging service
