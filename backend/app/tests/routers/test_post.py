@@ -29,6 +29,18 @@ async def create_comment(
     return response.json()
 
 
+async def like_post(
+    post_id: int, async_client: AsyncClient, logged_in_token: str
+) -> dict:
+    """Likes a post and returns it."""
+    response = await async_client.post(
+        f"/post/{post_id}/like",
+        json={"post_id": post_id},
+        headers={"Authorization": f"Bearer {logged_in_token}"},
+    )
+    return response.json()
+
+
 @pytest.fixture()
 # creatED, because by the time the function runs, the post is already created.
 async def created_post(async_client: AsyncClient, logged_in_token: str):
@@ -97,6 +109,27 @@ async def test_create_post_missing_data(
     )
 
     assert response.status_code == 422
+
+
+@pytest.mark.anyio
+async def test_like_post(
+    async_client: AsyncClient,
+    created_post: dict,
+    registered_user: dict,
+    logged_in_token: str,
+):
+    response = await async_client.post(
+        f"/post/{created_post['id']}/like",
+        json={"post_id": created_post["id"]},
+        headers={"Authorization": f"Bearer {logged_in_token}"},
+    )
+
+    assert response.status_code == 201
+    assert {
+        "id": 1,
+        "post_id": created_post["id"],
+        "user_id": registered_user["id"],
+    }.items() <= response.json().items()
 
 
 @pytest.mark.anyio

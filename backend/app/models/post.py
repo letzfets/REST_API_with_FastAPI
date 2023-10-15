@@ -35,3 +35,16 @@ class UserPostWithComments(BaseModel):
 
     post: UserPost
     comments: list[Comment]
+
+
+class PostLikeIn(BaseModel):
+    """This is the PostLikeIn model"""
+
+    post_id: int
+
+
+class PostLike(PostLikeIn):
+    """This is the PostLike model"""
+
+    id: int
+    user_id: int
