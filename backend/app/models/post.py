@@ -15,6 +15,12 @@ class UserPost(UserPostIn):
     user_id: int
 
 
+class UserPostWithLikes(UserPost):
+    """This is the UserPostWithLikes model"""
+
+    likes: int
+
+
 class CommentIn(BaseModel):
     """This is the Comment model"""
 
@@ -33,7 +39,7 @@ class Comment(CommentIn):
 class UserPostWithComments(BaseModel):
     """This is the UserPostWithComments model"""
 
-    post: UserPost
+    post: UserPostWithLikes
     comments: list[Comment]
 
 

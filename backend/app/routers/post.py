@@ -1,6 +1,7 @@
 import logging
 from typing import Annotated
 
+import sqlalchemy
 from app.database import comment_table, database, like_table, post_table
 from app.models.post import (
     Comment,
@@ -21,16 +22,31 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/")
-def read_root():
-    """This is the root path of the API"""
-    return {"message": "Hello World"}
+# @router.get("/")
+# def read_root():
+#     """This is the root path of the API"""
+# return {"message": "Hello World"}
+
+
+select_post_and_likes = (
+    (
+        sqlalchemy.select(
+            post_table,
+            sqlalchemy.func.count(like_table.c.id).label("likes"),
+        )
+    )
+    .select_from(post_table.outerjoin(like_table))  # joins post_table with like_tables
+    .group_by(
+        post_table.c.id
+    )  # and groups by post_table id => e.g. is a single row per post
+)
 
 
 async def find_post(post_id: int):
     """This is the find_post_by_id function"""
     logger.info(f"Finding post with id {post_id}")
     # generates a query clause
+    # post_table.select() is equivalent to sqlalchemy.select([post_table]).select_from(post_table)
     query = post_table.select().where(post_table.c.id == post_id)
     logger.debug(query)
     return await database.fetch_one(query)  # returns a SQLAlchemy Row object
@@ -90,7 +106,10 @@ async def get_comments_on_post(post_id: int):
 async def get_post_with_comments(post_id: int):
     """This is the get_post with comments path of the API"""
     logger.info(f"Getting post with id {post_id} and all its comments")
-    post = await find_post(post_id)
+    # post = await find_post(post_id)
+    query = select_post_and_likes.where(post_table.c.id == post_id)
+    logger.debug(query)
+    post = await database.fetch_one(query)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
