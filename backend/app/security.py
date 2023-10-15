@@ -1,6 +1,6 @@
 import datetime
 import logging
-from typing import Annotated
+from typing import Annotated, Literal
 
 from app.config import config
 from app.database import database, user_table
@@ -18,11 +18,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 pwd_context = CryptContext(schemes=["bcrypt"])
 
 
-credentials_exception = HTTPException(
-    status_code=status.HTTP_401_UNAUTHORIZED,
-    detail="Could not validate credentials",
-    headers={"WWW-Authenticate": "Bearer"},
-)
+def create_credentials_exception(detail: str):
+    return HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail=detail,
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
 
 def access_token_expire_minutes() -> str:
@@ -61,12 +62,36 @@ def create_confirmation_token(email: dict):
     jwt_payload = {
         "sub": email,
         "exp": expire,
-        "type": "confirm",  # to distinguish between access and confirm tokens
+        "type": "confirmation",  # to distinguish between access and confirm tokens
     }
     encoded_jwt = jwt.encode(
         jwt_payload, key=config.SECRET_KEY, algorithm=config.ALGORITHM
     )
     return encoded_jwt
+
+
+def get_subject_for_token_type(
+    token: str, type: Literal["access", "confirmation"]
+) -> str:
+    if not token:
+        raise create_credentials_exception("Token not present.")
+    try:
+        payload = jwt.decode(
+            token, key=config.SECRET_KEY, algorithms=[config.ALGORITHM]
+        )
+    except ExpiredSignatureError as e:
+        raise create_credentials_exception("Token has expired") from e
+    except JWTError as e:
+        raise create_credentials_exception("Invalid token") from e
+    email = payload.get("sub")
+    if email is None:
+        raise create_credentials_exception("Token is missing 'sub' field")
+    token_type = payload.get("type")
+    if type is None or token_type != type:
+        raise create_credentials_exception(
+            f"Token is of incorrect type, expected '{type}'"
+        )
+    return email
 
 
 def get_password_hash(password: str) -> str:
@@ -92,10 +117,10 @@ async def authenticate_user(email: str, password: str):
     logger.debug("Authenticating user with email", extra={"email": email})
     user = await get_user(email)
     if not user:
-        raise credentials_exception
+        raise create_credentials_exception("Invalid email or password.")
     # note, user.password is the hashed password!
     if not verify_password(password, user.password):
-        raise credentials_exception
+        raise create_credentials_exception("Invalid email or password.")
     return user
 
 
@@ -103,26 +128,8 @@ async def authenticate_user(email: str, password: str):
 # That means token now depends on oauth2_scheme.
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     """Gets the current user from the database."""
-    if not token:
-        raise credentials_exception
-    try:
-        payload = jwt.decode(
-            token, key=config.SECRET_KEY, algorithms=[config.ALGORITHM]
-        )
-        email = payload.get("sub")
-        if email is None:
-            raise credentials_exception
-        if type is None or payload.get("type") != "access":
-            raise credentials_exception
-    except ExpiredSignatureError as e:
-        raise HTTPException(
-            status_code=401,
-            detail="Token has expired",
-            headers={"WWW-Authenticate": "Bearer"},
-        ) from e
-    except JWTError as e:
-        raise credentials_exception from e
+    email = get_subject_for_token_type(token, "access")
     user = await get_user(email)
     if user is None:
-        raise credentials_exception
+        raise create_credentials_exception("User not found")
     return user

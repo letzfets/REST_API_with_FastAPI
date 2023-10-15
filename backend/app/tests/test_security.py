@@ -25,9 +25,62 @@ def test_create_access_token():
 def test_create_confirm_token():
     """Test that we can create a confirmation token."""
     token = security.create_confirmation_token("123")
-    assert {"sub": "123", "type": "confirm"}.items() <= jwt.decode(
+    assert {"sub": "123", "type": "confirmation"}.items() <= jwt.decode(
         token, key=config.SECRET_KEY, algorithms=[config.ALGORITHM]
     ).items()
+
+
+def test_get_subject_for_token_type_valid_confirmation():
+    """Test that we can get the subject from a valid confirmation token."""
+    email = "test@example.com"
+    token = security.create_confirmation_token(email)
+    assert email == security.get_subject_for_token_type(token, "confirmation")
+
+
+def test_get_subject_for_token_type_valid_access():
+    """Test that we can get the subject from a valid access token."""
+    email = "test@example.com"
+    token = security.create_access_token(email)
+    assert email == security.get_subject_for_token_type(token, "access")
+
+
+def test_get_subject_for_token_type_expired(mocker):
+    """Test that we cannot get the subject from an expired token."""
+    mocker.patch("app.security.access_token_expire_minutes", return_value=-1)
+    email = "test@example.com"
+    token = security.create_access_token(email)
+    with pytest.raises(security.HTTPException) as exc_info:
+        security.get_subject_for_token_type(token, "access")
+    assert "Token has expired" in exc_info.value.detail
+
+
+def test_get_subject_for_token_type_invalid_token():
+    """Test that we cannot get the subject from an expired token."""
+    token = "Invalid token"
+    with pytest.raises(security.HTTPException) as exc_info:
+        security.get_subject_for_token_type(token, "access")
+    assert "Invalid token" in exc_info.value.detail
+
+
+def test_get_subject_for_token_type_missing_sub():
+    """Test that we cannot get the subject from a token without a sub field."""
+    email = "test@example.com"
+    token = security.create_access_token(email)
+    payload = jwt.decode(token, key=config.SECRET_KEY, algorithms=[config.ALGORITHM])
+    del payload["sub"]
+    token = jwt.encode(payload, key=config.SECRET_KEY, algorithm=config.ALGORITHM)
+    with pytest.raises(security.HTTPException) as exc_info:
+        security.get_subject_for_token_type(token, "access")
+    assert "Token is missing 'sub' field" in exc_info.value.detail
+
+
+def test_get_subject_for_token_type_wrong_type():
+    """Test that we cannot get the subject from a token with the wrong type."""
+    email = "test@example.com"
+    token = security.create_confirmation_token(email)
+    with pytest.raises(security.HTTPException) as exc_info:
+        security.get_subject_for_token_type(token, "access")
+    assert "Token is of incorrect type, expected 'access" in exc_info.value.detail
 
 
 def test_password_hashing():
