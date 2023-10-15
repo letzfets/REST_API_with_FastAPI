@@ -1,9 +1,10 @@
 import datetime
 import logging
+from typing import Annotated
 
 from app.config import config
 from app.database import database, user_table
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import ExpiredSignatureError, JWTError, jwt
 from passlib.context import CryptContext
@@ -75,7 +76,9 @@ async def authenticate_user(email: str, password: str):
     return user
 
 
-async def get_current_user(token: str = None):
+# The way arguments are past here is a dependency injection.
+# That means token now depends on oauth2_scheme.
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     """Gets the current user from the database."""
     if not token:
         raise credentials_exception
