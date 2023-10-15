@@ -140,3 +140,16 @@ JWT includes:
     - expiration date
 - signature
 
+# Many-to-many relationships
+
+Many-to-many relationships are super important, and fortunately not that complicated!
+
+In this section we'll add "post likes".
+
+To do this we'll follow our usual "new feature methodology":
+
+- Decide what data we need to store (in `database.py`)
+- Decide what data our API will receive as input and will return as output (in `models.py`)
+- Implement the API endpoints to acquire and return the data (in `routers/post.py`)
+
+We'll also introduce various new concepts, such as extracting queries to simplify re-using them, using Enum for sorting API responses, and using Pytest parametrization to simplify our tests.
