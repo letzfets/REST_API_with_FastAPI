@@ -1,4 +1,5 @@
 import logging
+from enum import Enum
 from typing import Annotated
 
 import sqlalchemy
@@ -11,6 +12,7 @@ from app.models.post import (
     UserPost,
     UserPostIn,
     UserPostWithComments,
+    UserPostWithLikes,
 )
 from app.models.user import User
 from app.security import get_current_user
@@ -66,11 +68,31 @@ async def create_post(
     return {**data, "id": last_record_id}
 
 
-@router.get("/posts", response_model=list[UserPost])
-async def get_all_posts():
+class PostSorting(str, Enum):
+    new = "new"
+    old = "old"
+    most_likes = "most_likes"
+
+
+@router.get("/posts", response_model=list[UserPostWithLikes])
+# FastAPI, knows that the PostSorting parameter is a query parameter,
+# as it is of type Enum.
+# http://api.com/posts?sorting=most_likes
+async def get_all_posts(sorting: PostSorting = PostSorting.new):
     """This is returns all posts of the API"""
     logger.info("Getting all posts.")
-    query = post_table.select()
+    if sorting == PostSorting.new:
+        query = select_post_and_likes.order_by(post_table.c.id.desc())
+    elif sorting == PostSorting.old:
+        query = select_post_and_likes.order_by(post_table.c.id.asc())
+    elif sorting == PostSorting.most_likes:
+        query = select_post_and_likes.order_by(sqlalchemy.desc("likes"))
+    else:
+        logger.error("Unknown sorting option", extra={"sorting": sorting})
+    # Newer way in Python to do this:
+    # match sorting:
+    #     case PostSorting.new:
+    #         query = select_post_and_likes.order_by(sqlalchemy.desc(post_table.c.id))
     logger.debug(query)
     return await database.fetch_all(query)
 
