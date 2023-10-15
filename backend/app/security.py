@@ -30,6 +30,11 @@ def access_token_expire_minutes() -> str:
     return 30
 
 
+def confirm_token_expire_minutes() -> str:
+    """Returns the confirm token expire time in minutes."""
+    return 60 * 24
+
+
 def create_access_token(email: dict):
     """Creates an access token."""
     logger.debug("Creating access token", extra={"email": email})
@@ -39,6 +44,24 @@ def create_access_token(email: dict):
     jwt_payload = {
         "sub": email,
         "exp": expire,
+        "type": "access",  # to distinguish between access and confirm tokens
+    }
+    encoded_jwt = jwt.encode(
+        jwt_payload, key=config.SECRET_KEY, algorithm=config.ALGORITHM
+    )
+    return encoded_jwt
+
+
+def create_confirmation_token(email: dict):
+    """Creates an confirmation token."""
+    logger.debug("Creating confirmation token", extra={"email": email})
+    expire = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+        minutes=confirm_token_expire_minutes()
+    )
+    jwt_payload = {
+        "sub": email,
+        "exp": expire,
+        "type": "confirm",  # to distinguish between access and confirm tokens
     }
     encoded_jwt = jwt.encode(
         jwt_payload, key=config.SECRET_KEY, algorithm=config.ALGORITHM
@@ -88,6 +111,8 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         )
         email = payload.get("sub")
         if email is None:
+            raise credentials_exception
+        if type is None or payload.get("type") != "access":
             raise credentials_exception
     except ExpiredSignatureError as e:
         raise HTTPException(
