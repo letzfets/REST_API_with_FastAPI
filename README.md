@@ -36,7 +36,14 @@ Using *Fixtures*: a couple of things to share between tests -> put in conftest.p
 
 Showing all defined fixtures: `pytest --fixtures`
 
-Boundary Value Analysis: find out how many tests and which ones to 
+Boundary Value Analysis: find out how many tests and which ones to write.
+
+Run tests here with
+
+```
+docker compose run --rm backend sh -c "pytest"
+```
+
 
 # Async databases
 
