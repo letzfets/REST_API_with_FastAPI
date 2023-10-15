@@ -4,12 +4,16 @@ import logging
 from app.config import config
 from app.database import database, user_table
 from fastapi import HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from jose import ExpiredSignatureError, JWTError, jwt
 from passlib.context import CryptContext
 
 logger = logging.getLogger(__name__)
 
-
+# smarter tokenUrl: /api/v1/user/token
+# 1. populates the OpenAPI docs with the correct URL
+# 2. when calling oauth2_scheme, it will automatically return the token
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 pwd_context = CryptContext(schemes=["bcrypt"])
 
 
