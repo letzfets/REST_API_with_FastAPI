@@ -41,7 +41,7 @@ async def create_post(
     """This is the create_post path of the API"""
     logger.info("Creating post")
     # following line protects the route
-    data = post.model_dump()
+    data = {**post.model_dump(), "user_id": current_user.id}
     query = post_table.insert().values(data)  # keys need to match columns in the table
     logger.debug(query)
     last_record_id = await database.execute(query)  # returns the id of the new record
@@ -67,7 +67,7 @@ async def create_comment(
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
-    data = comment.model_dump()
+    data = {**comment.model_dump(), "user_id": current_user.id}
     query = comment_table.insert().values(data)
     # logger.debug(query, extra={"post_id": post.id, "email": "bob@example.com"})
     logger.debug(query)
