@@ -19,6 +19,8 @@ class GlobalConfig(BaseConfig):
     SECRET_KEY: Optional[str] = None
     ALGORITHM: Optional[str] = None
     ACCESS_TOKEN_EXPIRE_MINUTES: Optional[int] = 30
+    MAILGUN_API_KEY: Optional[str] = None
+    MAILGUN_DOMAIN: Optional[str] = None
 
 
 class DevConfig(GlobalConfig):
