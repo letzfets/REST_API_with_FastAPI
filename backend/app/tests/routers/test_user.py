@@ -71,13 +71,13 @@ async def test_login_user_not_exists(async_client: AsyncClient):
 
 
 @pytest.mark.anyio
-async def test_login_user(async_client: AsyncClient, registered_user: dict):
+async def test_login_user(async_client: AsyncClient, confirmed_user: dict):
     """Test that we cannot login a user that does not exist."""
     response = await async_client.post(
         "/token",
         json={
-            "email": registered_user["email"],
-            "password": registered_user["password"],
+            "email": confirmed_user["email"],
+            "password": confirmed_user["password"],
         },
     )
     assert response.status_code == 200
@@ -85,14 +85,30 @@ async def test_login_user(async_client: AsyncClient, registered_user: dict):
 
 
 @pytest.mark.anyio
-async def test_login_user_wrong_password(
+async def test_login_user_note_confirmed(
     async_client: AsyncClient, registered_user: dict
+):
+    """Test that we cannot login a user that is not confirmed."""
+    response = await async_client.post(
+        "/token",
+        json={
+            "email": registered_user["email"],
+            "password": registered_user["password"],
+        },
+    )
+    assert response.status_code == 401
+    assert "Email not confirmed." in response.json()["detail"]
+
+
+@pytest.mark.anyio
+async def test_login_user_wrong_password(
+    async_client: AsyncClient, confirmed_user: dict
 ):
     """Test that we cannot login a user with a wrong password."""
     response = await async_client.post(
         "/token",
         json={
-            "email": registered_user["email"],
+            "email": confirmed_user["email"],
             "password": "wrongpassword",
         },
     )
