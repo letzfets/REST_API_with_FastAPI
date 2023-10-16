@@ -166,3 +166,9 @@ We'll also introduce various new concepts, such as extracting queries to simplif
 Sending emails with FastAPI, include a link with secure_unique_token to confirm email address.
 But the confirmation JWT needs to be different from the access token, otherwise user could copy and paste the token and use it as access token - without ever clicking at the confirm link.
 
+Mailservices:
+- Mailgun
+- Mailgim
+- Drip
+- ActiveCampain
+- ConvertKit
