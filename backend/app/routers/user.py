@@ -1,5 +1,6 @@
 import logging
 
+from app import tasks
 from app.database import database, user_table
 from app.models.user import UserIn
 from app.security import (
@@ -28,11 +29,12 @@ async def register(user: UserIn, request: Request):
     query = user_table.insert().values(email=user.email, password=hashed_password)
     logger.debug(query)
     await database.execute(query)
+    await tasks.send_user_registration_email(
+        user.email,
+        request.url_for("confirm_email", token=create_confirmation_token(user.email)),
+    )
     return {
         "detail": "User created. PLease confirm your email.",
-        "confirmation_url": request.url_for(
-            "confirm_email", token=create_confirmation_token(user.email)
-        ),
     }
 
 
