@@ -11,14 +11,14 @@ from app.security import (
     get_subject_for_token_type,
     get_user,
 )
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, status
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
 @router.post("/register", status_code=201)
-async def register(user: UserIn, request: Request):
+async def register(user: UserIn, background_tasks: BackgroundTasks, request: Request):
     """This is the register path of the API"""
     if await get_user(user.email):
         raise HTTPException(
@@ -29,7 +29,12 @@ async def register(user: UserIn, request: Request):
     query = user_table.insert().values(email=user.email, password=hashed_password)
     logger.debug(query)
     await database.execute(query)
-    await tasks.send_user_registration_email(
+    # fastapi will run the function in the background and automatically await it.
+    # because this is the slow part of this function, background tasks, can run later
+    # and the user will get the response from the register endpoint faster.
+    # but don't use background tasks for things that are computational heavy.
+    background_tasks.add_task(
+        tasks.send_user_registration_email,
         user.email,
         request.url_for("confirm_email", token=create_confirmation_token(user.email)),
     )
