@@ -7,6 +7,7 @@ import pytest
 os.environ["ENV_STATE"] = "test"  # noqa: E402
 from app.database import database, user_table  # noqa: E402
 from app.main import app
+from app.tests.helpers import create_post  # noqa: E402
 from fastapi.testclient import TestClient
 from httpx import AsyncClient, Request, Response
 
@@ -29,7 +30,7 @@ def client() -> Generator:
 async def db() -> Generator:
     """Clears the database before each test."""
     await database.connect()
-    yield
+    yield database
     await database.disconnect()
 
 
@@ -84,3 +85,10 @@ def mock_httpx_client(mocker):
     mocked_client.return_value.__aenter__.return_value = mocked_async_client
 
     return mocked_async_client
+
+
+@pytest.fixture()
+# creatED, because by the time the function runs, the post is already created.
+async def created_post(async_client: AsyncClient, logged_in_token: str):
+    """Creates a post and returns it."""
+    return await create_post("Test Post", async_client, logged_in_token)

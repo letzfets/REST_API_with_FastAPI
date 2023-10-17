@@ -1,51 +1,7 @@
 import pytest
 from app import security
+from app.tests.helpers import create_comment, create_post, like_post
 from httpx import AsyncClient
-
-
-# Normal python function, just to help the tests.
-async def create_post(
-    body: str, async_client: AsyncClient, logged_in_token: str
-) -> dict:
-    """Creates a post and returns it."""
-    response = await async_client.post(
-        "/post",
-        # Also sets the Header and content type:
-        json={"body": body},
-        headers={"Authorization": f"Bearer {logged_in_token}"},
-    )
-    return response.json()
-
-
-async def create_comment(
-    body: str, post_id: int, async_client: AsyncClient, logged_in_token: str
-) -> dict:
-    """Creates a post and returns it."""
-    response = await async_client.post(
-        "/comment",
-        json={"body": body, "post_id": post_id},
-        headers={"Authorization": f"Bearer {logged_in_token}"},
-    )
-    return response.json()
-
-
-async def like_post(
-    post_id: int, async_client: AsyncClient, logged_in_token: str
-) -> dict:
-    """Likes a post and returns it."""
-    response = await async_client.post(
-        f"/post/{post_id}/like",
-        json={"post_id": post_id},
-        headers={"Authorization": f"Bearer {logged_in_token}"},
-    )
-    return response.json()
-
-
-@pytest.fixture()
-# creatED, because by the time the function runs, the post is already created.
-async def created_post(async_client: AsyncClient, logged_in_token: str):
-    """Creates a post and returns it."""
-    return await create_post("Test Post", async_client, logged_in_token)
 
 
 @pytest.fixture()
