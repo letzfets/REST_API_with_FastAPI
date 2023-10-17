@@ -29,6 +29,7 @@ def b2_get_bucket(api: b2.B2Api):
 
 def b2_upload_file(local_file: str, file_name: str) -> str:
     """Uploads a file to b2"""
+    logger.debug("Uploading file to b2", extra={"file_name": file_name})
     api = b2_api()
     bucket = b2_get_bucket(api)
     uploaded_file = bucket.upload_local_file(local_file=local_file, file_name=file_name)
