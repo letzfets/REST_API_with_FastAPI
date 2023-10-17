@@ -53,6 +53,7 @@ async def send_user_registration_email(email: str, confirmation_url: str):
 
 async def _generate_cute_creature_api(prompt: str):
     """Generates a cute creature from a prompt using AI"""
+    logger.debug("Generating cute creature")
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
@@ -66,7 +67,7 @@ async def _generate_cute_creature_api(prompt: str):
             return response.json()
         except httpx.HTTPError as err:
             raise APIResponseError(
-                f"API request failed with status code {response.status_code}"
+                f"API request failed with status code {err.response.status_code}"
             ) from err
         except (JSONDecodeError, TypeError) as err:
             raise APIResponseError("API response could not be decoded") from err
