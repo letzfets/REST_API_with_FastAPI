@@ -24,7 +24,7 @@ router = APIRouter()
 CHUNK_SIZE = 1024 * 1024  # 1 MB
 
 
-@router.post("/upload")
+@router.post("/upload", status_code=201)
 async def upload_file(file: UploadFile):
     """Uploads a file to b2"""
     try:

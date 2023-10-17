@@ -44,6 +44,11 @@ Run tests here with
 docker compose run --rm backend sh -c "pytest"
 ```
 
+## Test levels
+
+Unit tests should not test third party libraries, but only the code you wrote yourself. So third party functions need to be mocked.
+System tests should run less often, but cover the whole system - therefore third party libraries should be configured for that. Example: the file uploads to Backblaze B2: use a separate bucket for system tests.
+
 
 # Async databases
 
@@ -172,3 +177,4 @@ Mailservices:
 - Drip
 - ActiveCampain
 - ConvertKit
+
