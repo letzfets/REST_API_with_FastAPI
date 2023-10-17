@@ -16,7 +16,8 @@ from app.models.post import (
 )
 from app.models.user import User
 from app.security import get_current_user
-from fastapi import APIRouter, Depends
+from app.tasks import generate_and_add_to_post
+from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from fastapi.exceptions import HTTPException
 
 router = APIRouter()
@@ -56,7 +57,11 @@ async def find_post(post_id: int):
 
 @router.post("/post", response_model=UserPost, status_code=201)
 async def create_post(
-    post: UserPostIn, current_user: Annotated[User, Depends(get_current_user)]
+    post: UserPostIn,
+    current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks,
+    request: Request,
+    prompt: str = None,
 ):
     """This is the create_post path of the API"""
     logger.info("Creating post")
@@ -65,6 +70,17 @@ async def create_post(
     query = post_table.insert().values(data)  # keys need to match columns in the table
     logger.debug(query)
     last_record_id = await database.execute(query)  # returns the id of the new record
+
+    if prompt:
+        background_tasks.add_task(
+            generate_and_add_to_post,
+            current_user.email,
+            last_record_id,
+            request.url_for("get_post_with_comments", post_id=last_record_id),
+            database,
+            prompt,
+        )
+
     return {**data, "id": last_record_id}
 
 
