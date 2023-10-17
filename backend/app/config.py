@@ -24,6 +24,7 @@ class GlobalConfig(BaseConfig):
     BACKLBLAZE_B2_KEY_ID: Optional[str] = None
     BACKLBLAZE_B2_APPLICATION_KEY: Optional[str] = None
     BACKLBLAZE_B2_BUCKET_NAME: Optional[str] = None
+    DEEPAI_API_KEY: Optional[str] = None
 
 
 class DevConfig(GlobalConfig):
