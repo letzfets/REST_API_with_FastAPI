@@ -21,6 +21,9 @@ class GlobalConfig(BaseConfig):
     ACCESS_TOKEN_EXPIRE_MINUTES: Optional[int] = 30
     MAILGUN_API_KEY: Optional[str] = None
     MAILGUN_DOMAIN: Optional[str] = None
+    BACKLBLAZE_B2_KEY_ID: Optional[str] = None
+    BACKLBLAZE_B2_APPLICATION_KEY: Optional[str] = None
+    BACKLBLAZE_B2_BUCKET_NAME: Optional[str] = None
 
 
 class DevConfig(GlobalConfig):
