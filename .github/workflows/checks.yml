@@ -1,0 +1,41 @@
+---
+name: Checks
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+permissions:
+    contents: read
+    issues: write
+    pull-requests: write
+
+jobs:
+    formating:
+        name: Format checks
+        runs-on: ubuntu-20.04
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            - name: Check formatting
+              run: docker compose run --rm backend sh -c "black ."
+
+    linting:
+        name: Linting checks
+        runs-on: ubuntu-20.04
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            - name: Run Linting
+              run: docker compose run --rm backend sh -c "ruff ."
+                
+    testing:
+        name: Run unit tests
+        runs-on: ubuntu-20.04
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            - name: Run tests
+              run: docker compose run --rm backend sh -c "pytest -v"
