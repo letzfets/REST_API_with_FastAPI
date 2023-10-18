@@ -32,13 +32,13 @@ class DevConfig(GlobalConfig):
 
     # only uses the variables prefixed names with "DEV_"
     # stripes off the prefix and assigns the rest to the variable
-    model_config = SettingsConfigDict(env_prefix="DEV_")
+    model_config = SettingsConfigDict(env_prefix="DEV_", extra="ignore")
 
 
 class TestConfig(GlobalConfig):
     """This is the Development class"""
 
-    model_config = SettingsConfigDict(env_prefix="TEST_")
+    model_config = SettingsConfigDict(env_prefix="TEST_", extra="ignore")
     DATABASE_URL: str = "sqlite:///test.db"
     DB_FORCE_ROLL_BACK: bool = True
 
@@ -46,7 +46,7 @@ class TestConfig(GlobalConfig):
 class ProdConfig(GlobalConfig):
     """This is the Development class"""
 
-    model_config = SettingsConfigDict(env_prefix="PROD_")
+    model_config = SettingsConfigDict(env_prefix="PROD_", extra="ignore")
 
 
 # cache this function, so that it never runs more than once
