@@ -3,7 +3,7 @@ FROM python:3.10-alpine
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 COPY ./app /app
-WORKDIR /app
+WORKDIR /
 EXPOSE 8000
 
 # TBD: split into multi-stage build
