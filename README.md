@@ -178,3 +178,6 @@ Mailservices:
 - ActiveCampain
 - ConvertKit
 
+# Deploy
+
+To [Render](https://www.render.com).
