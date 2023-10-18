@@ -187,3 +187,7 @@ To [Render](https://www.render.com).
 [ElephantSQL](https://www.elephantsql.com) offers more features in free tier than [Render](https://www.render.com).
 
 database modifiation package: example: `alembic`
+
+# Error detection
+
+[Sentry](https:sentry.io) is a good tool for error detection.
