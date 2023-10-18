@@ -3,13 +3,13 @@ from typing import AsyncGenerator, Generator
 from unittest.mock import AsyncMock, Mock
 
 import pytest
+from fastapi.testclient import TestClient
+from httpx import AsyncClient, Request, Response
 
 os.environ["ENV_STATE"] = "test"  # noqa: E402
 from app.database import database, user_table  # noqa: E402
-from app.main import app
+from app.main import app  # noqa: E402
 from app.tests.helpers import create_post  # noqa: E402
-from fastapi.testclient import TestClient
-from httpx import AsyncClient, Request, Response
 
 
 # runs only once per test session
