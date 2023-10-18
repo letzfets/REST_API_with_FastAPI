@@ -5,17 +5,49 @@ from typing import Annotated, Literal
 from app.config import config
 from app.database import database, user_table
 from fastapi import Depends, HTTPException, status
+
+# from fastapi.openapi.utils import get_openapi
 from fastapi.security import OAuth2PasswordBearer
+
+# from fastapi.security import OAuth2AuthorizationCodeBearer
 from jose import ExpiredSignatureError, JWTError, jwt
 from passlib.context import CryptContext
 
+# from fastapi.openapi.models import OAuthFlows, SecurityScheme
+
+
 logger = logging.getLogger(__name__)
 
+
+# oauth2_scheme = SecurityScheme(
+#     type="oauth2",
+#     flows=OAuthFlows(
+#         bearer={
+#             "scheme": "bearer",
+#             "bearerFormat": "JWT",
+#             "tokenUrl": "/token",
+#         }
+#     ),
+# )
 # smarter tokenUrl: /api/v1/user/token
 # 1. populates the OpenAPI docs with the correct URL
 # 2. when calling oauth2_scheme, it will automatically return the token
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+# oauth2_scheme = OAuth2AuthorizationCodeBearer(tokenUrl="token")
 pwd_context = CryptContext(schemes=["bcrypt"])
+
+
+# def get_openapi_schema():
+#     openapi_schema = get_openapi(
+#         title="My API",
+#         version="1.0.0",
+#         description="My API description",
+#         # routes=router.routes,
+#     )
+#     # Add the security requirement to the OpenAPI schema
+#     openapi_schema["security"] = [{"oauth2": []}]
+#     openapi_schema["components"] = {"securitySchemes": {"oauth2": oauth2_scheme}}
+#     return openapi_schema
 
 
 def create_credentials_exception(detail: str):
