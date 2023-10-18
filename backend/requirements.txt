@@ -1,8 +1,9 @@
 fastapi>=0.103.2,<0.104
 uvicorn[all]>=0.23.2,<0.24
 sqlalchemy # dependency problem with databases[aiosqlite] fixes sqlalchemy to >=1.4.42,<1.5 - otherwise >=2.0.22,<2.1 would be latest
+psycopg2>=2.9.9,<2.10
 databases[aiosqlite]>=0.8.0,<0.9
-# databases[asyncpg]>=0.8.0,<0.9 # for PostgreSQL
+databases[asyncpg]>=0.8.0,<0.9 # for PostgreSQL
 python-dotenv>=1.0.0,<1.1
 pydantic-settings>=2.0.3,<2.1
 rich<13.17

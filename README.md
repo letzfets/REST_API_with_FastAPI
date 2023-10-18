@@ -181,3 +181,9 @@ Mailservices:
 # Deploy
 
 To [Render](https://www.render.com).
+
+# PostrgeSQL
+
+[ElephantSQL](https://www.elephantsql.com) offers more features in free tier than [Render](https://www.render.com).
+
+database modifiation package: example: `alembic`
