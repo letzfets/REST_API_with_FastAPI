@@ -64,8 +64,8 @@ async def test_confirm_user_expired_token(async_client: AsyncClient, mocker):
 @pytest.mark.anyio
 async def test_login_user_not_exists(async_client: AsyncClient):
     """Test that we cannot login a user that does not exist."""
-    user_details = {"email": "test@example.net", "password": "1234"}
-    response = await async_client.post("/token", json=user_details)
+    user_details = {"username": "test@example.net", "password": "1234"}
+    response = await async_client.post("/token", data=user_details)
     assert response.status_code == 401
     assert "Invalid email or password." in response.json()["detail"]
 
@@ -75,8 +75,8 @@ async def test_login_user(async_client: AsyncClient, confirmed_user: dict):
     """Test that we cannot login a user that does not exist."""
     response = await async_client.post(
         "/token",
-        json={
-            "email": confirmed_user["email"],
+        data={
+            "username": confirmed_user["email"],
             "password": confirmed_user["password"],
         },
     )
@@ -91,8 +91,8 @@ async def test_login_user_note_confirmed(
     """Test that we cannot login a user that is not confirmed."""
     response = await async_client.post(
         "/token",
-        json={
-            "email": registered_user["email"],
+        data={
+            "username": registered_user["email"],
             "password": registered_user["password"],
         },
     )
@@ -107,8 +107,8 @@ async def test_login_user_wrong_password(
     """Test that we cannot login a user with a wrong password."""
     response = await async_client.post(
         "/token",
-        json={
-            "email": confirmed_user["email"],
+        data={
+            "username": confirmed_user["email"],
             "password": "wrongpassword",
         },
     )

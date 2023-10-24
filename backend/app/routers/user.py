@@ -1,4 +1,5 @@
 import logging
+from typing import Annotated
 
 from app import tasks
 from app.database import database, user_table
@@ -11,7 +12,8 @@ from app.security import (
     get_subject_for_token_type,
     get_user,
 )
-from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
+from fastapi.security import OAuth2PasswordRequestForm
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -44,10 +46,10 @@ async def register(user: UserIn, background_tasks: BackgroundTasks, request: Req
 
 
 @router.post("/token")
-async def login(user: UserIn):
+async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     """This is the login path of the API"""
-    user = await authenticate_user(user.email, user.password)
-    access_token = create_access_token(user.email)
+    await authenticate_user(form_data.username, form_data.password)
+    access_token = create_access_token(form_data.username)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
